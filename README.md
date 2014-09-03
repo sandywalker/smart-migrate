@@ -19,3 +19,11 @@ Features
 * Support auto i18n (now supported:EN,zh-CN)
 
 
+How to Use
+=============
+
+The project is coded with NetBeans IDE 8.0 under jdk 1.6.0,use maven3.0 to manage the project's build.
+
+You can run/debug the code by NetBeans IDE,or you can build an executable jar by **maven** with **maven-assembly-plugin**
+
+If you want to add i18n support for your own languages,just create bundle file in **org/smart/migrate/ui** directory
