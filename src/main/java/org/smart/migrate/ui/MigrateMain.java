@@ -259,6 +259,11 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
         jScrollPane4 = new javax.swing.JScrollPane();
         mmoLogs = new javax.swing.JTextPane();
         btnRollBack = new javax.swing.JButton();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel38 = new javax.swing.JLabel();
+        edtBatchSize = new javax.swing.JFormattedTextField();
+        jLabel39 = new javax.swing.JLabel();
+        jLabel37 = new javax.swing.JLabel();
         buttonPrev = new javax.swing.JButton();
         buttonNext = new javax.swing.JButton();
         btnSavePlan = new javax.swing.JButton();
@@ -556,7 +561,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
                 .addContainerGap()
                 .addComponent(jLabel15)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(textNewPlan, javax.swing.GroupLayout.DEFAULT_SIZE, 358, Short.MAX_VALUE)
+                .addComponent(textNewPlan, javax.swing.GroupLayout.DEFAULT_SIZE, 390, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -566,7 +571,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(textNewPlan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel15))
-                .addContainerGap(205, Short.MAX_VALUE))
+                .addContainerGap(204, Short.MAX_VALUE))
         );
 
         tabPlan.addTab(bundle.getString("MigrateMain.jPanel1.TabConstraints.tabTitle"), jPanel1); // NOI18N
@@ -600,7 +605,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel36)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 463, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 551, Short.MAX_VALUE))
                 .addGap(16, 16, 16))
         );
         jPanel2Layout.setVerticalGroup(
@@ -638,7 +643,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
                 .addComponent(jLabel11)
                 .addGap(18, 18, 18)
                 .addComponent(tabPlan, javax.swing.GroupLayout.PREFERRED_SIZE, 365, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(67, Short.MAX_VALUE))
+                .addContainerGap(93, Short.MAX_VALUE))
         );
 
         panelSteps.add(panelStep1, "card1");
@@ -730,7 +735,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
                         .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, 7, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(edtSrcDBPort, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(158, Short.MAX_VALUE))
+                .addContainerGap(247, Short.MAX_VALUE))
         );
         panelStep2Layout.setVerticalGroup(
             panelStep2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -761,7 +766,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
                     .addComponent(jLabel21))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnTestConnectSrc)
-                .addContainerGap(144, Short.MAX_VALUE))
+                .addContainerGap(170, Short.MAX_VALUE))
         );
 
         panelSteps.add(panelStep2, "card2");
@@ -853,7 +858,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
                         .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 7, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(edtTgtDBPort, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(159, Short.MAX_VALUE))
+                .addContainerGap(248, Short.MAX_VALUE))
         );
         panelStep3Layout.setVerticalGroup(
             panelStep3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -884,7 +889,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
                     .addComponent(jLabel28))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnTestConnectTarget)
-                .addContainerGap(157, Short.MAX_VALUE))
+                .addContainerGap(183, Short.MAX_VALUE))
         );
 
         panelSteps.add(panelStep3, "card3");
@@ -964,7 +969,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
                     .addGroup(panelStep4Layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(panelStep4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 535, Short.MAX_VALUE)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 623, Short.MAX_VALUE)
                             .addGroup(panelStep4Layout.createSequentialGroup()
                                 .addComponent(jLabel16)
                                 .addGap(0, 0, Short.MAX_VALUE))))
@@ -1002,7 +1007,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
                     .addComponent(btnDeleteTargetData)
                     .addComponent(edtDeleteWhere, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel35))
-                .addContainerGap(15, Short.MAX_VALUE))
+                .addContainerGap(41, Short.MAX_VALUE))
         );
 
         panelSteps.add(panelStep4, "card4");
@@ -1065,7 +1070,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
             .addGroup(panelStep5Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panelStep5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 535, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 623, Short.MAX_VALUE)
                     .addGroup(panelStep5Layout.createSequentialGroup()
                         .addComponent(jLabel12)
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -1137,27 +1142,66 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
             }
         });
 
+        jPanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
+
+        jLabel38.setText(bundle.getString("MigrateMain.jLabel38.text")); // NOI18N
+
+        edtBatchSize.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter()));
+        edtBatchSize.setValue(50);
+
+        jLabel39.setForeground(new java.awt.Color(204, 204, 204));
+        jLabel39.setText(bundle.getString("MigrateMain.jLabel39.text")); // NOI18N
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel38)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(edtBatchSize, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel39)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel38)
+                    .addComponent(edtBatchSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel39))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jLabel37.setText(bundle.getString("MigrateMain.jLabel37.text")); // NOI18N
+
         javax.swing.GroupLayout panelStep6Layout = new javax.swing.GroupLayout(panelStep6);
         panelStep6.setLayout(panelStep6Layout);
         panelStep6Layout.setHorizontalGroup(
             panelStep6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelStep6Layout.createSequentialGroup()
+            .addGroup(panelStep6Layout.createSequentialGroup()
+                .addComponent(btnRunImport)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnStop)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnExportLogs)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnRollBack)
+                .addGap(0, 165, Short.MAX_VALUE))
+            .addGroup(panelStep6Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(panelStep6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane4)
-                    .addComponent(pbMain, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelStep6Layout.createSequentialGroup()
-                        .addGroup(panelStep6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel32, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelStep6Layout.createSequentialGroup()
-                                .addComponent(btnRunImport)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnStop)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnExportLogs)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnRollBack)))
-                        .addGap(0, 153, Short.MAX_VALUE)))
+                .addGroup(panelStep6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(pbMain, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(panelStep6Layout.createSequentialGroup()
+                        .addGroup(panelStep6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel32)
+                            .addComponent(jLabel37))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panelStep6Layout.setVerticalGroup(
@@ -1165,14 +1209,18 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
             .addGroup(panelStep6Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel32)
-                .addGap(9, 9, 9)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel37)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelStep6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnRunImport)
                     .addComponent(btnStop)
                     .addComponent(btnExportLogs)
                     .addComponent(btnRollBack))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 374, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 333, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(pbMain, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -1573,7 +1621,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
     }//GEN-LAST:event_btnDeleteTargetDataActionPerformed
 
     private void btnRunImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRunImportActionPerformed
-        importManager.setBatchSize(50);
+        importManager.setBatchSize(Integer.parseInt(edtBatchSize.getText()));
         currentThread = new ImportThread(importManager, this, mmoLogs, pbMain, migratePlan);
         currentThread.start();
     }//GEN-LAST:event_btnRunImportActionPerformed
@@ -1687,6 +1735,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
     private javax.swing.JCheckBox cbxCheckAll;
     private javax.swing.JComboBox cbxSrcDBType;
     private javax.swing.JComboBox cbxTgtDBType;
+    private javax.swing.JFormattedTextField edtBatchSize;
     private javax.swing.JTextField edtDeleteWhere;
     private javax.swing.JTextField edtSrcDBHost;
     private javax.swing.JTextField edtSrcDBName;
@@ -1728,6 +1777,9 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
     private javax.swing.JLabel jLabel34;
     private javax.swing.JLabel jLabel35;
     private javax.swing.JLabel jLabel36;
+    private javax.swing.JLabel jLabel37;
+    private javax.swing.JLabel jLabel38;
+    private javax.swing.JLabel jLabel39;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -1736,6 +1788,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
