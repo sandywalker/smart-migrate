@@ -139,6 +139,7 @@ public class MappingDialog extends javax.swing.JDialog {
         List<Field> srcFields =  sourceMetaDao.getFieldsOfTable(sourceConnection, cbxSourceTables.getSelectedItem().toString());
         List<Field> tgtFields = targetMetaDao.getFieldsOfTable(targetConnection, cbxTargetTables.getSelectedItem().toString());
         
+        tgtComboBox.addItem("");
         for(Field field:tgtFields){
             tgtComboBox.addItem(field.getName());
         }

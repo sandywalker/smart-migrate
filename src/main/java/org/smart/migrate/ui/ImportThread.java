@@ -169,13 +169,18 @@ public class ImportThread  extends Thread implements ImportLogger{
      * 删除已导入的数据
      */
     public void deleteImportedData(){
-        SettingUtils.sortTableSettingsByRelations(migratePlan);
-        for(TableSetting tableSetting:migratePlan.getTableSettings()){
-            if (importManager.isTableImported(tableSetting)){
-                log(LogLevel.WARNING, bundle.getString("ImportThread.log.rollback.runing") + tableSetting.getTargetTable());
-                importManager.deleteImportedData(tableSetting);
-                log(tableSetting.getTargetTable()+ bundle.getString("ImportThread.log.rollback.complete") );
+        try {
+            SettingUtils.sortTableSettingsByRelations(migratePlan);
+            for(TableSetting tableSetting:migratePlan.getTableSettings()){
+                if (importManager.isTableImported(tableSetting)){
+                    log(LogLevel.WARNING, bundle.getString("ImportThread.log.rollback.runing") + tableSetting.getTargetTable());
+                    importManager.deleteImportedData(tableSetting);
+                    log(tableSetting.getTargetTable()+ bundle.getString("ImportThread.log.rollback.complete") );
+                }
             }
+        } catch (Exception e) {
+            log(LogLevel.ERROR, bundle.getString("ImportThread.log.rollback.error"));
+            importManager.resetContext();
         }
         importManager.resetContext();
     }
