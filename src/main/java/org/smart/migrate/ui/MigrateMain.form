@@ -659,7 +659,7 @@
                                   <Component id="textNewPlan" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="jLabel15" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace pref="204" max="32767" attributes="0"/>
+                              <EmptySpace pref="208" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>

@@ -571,7 +571,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(textNewPlan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel15))
-                .addContainerGap(204, Short.MAX_VALUE))
+                .addContainerGap(208, Short.MAX_VALUE))
         );
 
         tabPlan.addTab(bundle.getString("MigrateMain.jPanel1.TabConstraints.tabTitle"), jPanel1); // NOI18N
@@ -1642,13 +1642,25 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
          if (listPlan.getSelectedIndex()>=0){
              String planName = (String)listPlan.getSelectedValue();
              String planPath = MigratePlanIO.getPlanRoot()+"/"+ planName;
+             MigratePlan plan = null;
+             try {
+                 plan = MigratePlanIO.deSerialize(planName);
+             } catch (IOException ex) {
+                 Logger.getLogger(MigrateMain.class.getName()).log(Level.SEVERE, null, ex);
+             } catch (ClassNotFoundException ex) {
+                 Logger.getLogger(MigrateMain.class.getName()).log(Level.SEVERE, null, ex);
+             }
              JFileChooser fc = new JFileChooser();
              int returnVal = fc.showSaveDialog(this);
              if (returnVal == JFileChooser.APPROVE_OPTION) {
                  File file = fc.getSelectedFile();
                  try {
-                     FileUtils.copyFile(new File(planPath),file);
-                     JOptionPane.showMessageDialog(rootPane, bundle.getString("MigrateMain.message.export")+file.getAbsolutePath());
+                     if (plan!=null){
+                        plan.setName(file.getName());
+                        MigratePlanIO.serializeToFile(plan, file);
+                     //FileUtils.copyFile(new File(planPath),file);
+                        JOptionPane.showMessageDialog(rootPane, bundle.getString("MigrateMain.message.export")+file.getAbsolutePath());
+                     }
                  } catch (IOException ex) {
                      Logger.getLogger(MigrateMain.class.getName()).log(Level.SEVERE, null, ex);
                  }

@@ -80,6 +80,20 @@ public class MigratePlanIO {
     }
     
     /**
+     * Serialize the plan to File
+     * 将方案序列化到文件
+     * @param migratePlan
+     * @param file
+     * @throws IOException
+     * @throws FileNotFoundException
+     */
+    public static void serializeToFile(MigratePlan migratePlan,File file) throws IOException,FileNotFoundException{
+        OutputStream fos = new FileOutputStream(file);
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(migratePlan);
+    }
+    
+    /**
      * DeSerialize plan by name
      * 反序列化方案
      * @param planName
