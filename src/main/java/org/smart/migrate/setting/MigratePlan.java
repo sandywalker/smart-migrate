@@ -70,6 +70,30 @@ public class MigratePlan  implements  Serializable{
         return null;
     }
     
+    
+    private List<String> getTableNamesByFlag(String flag){
+        List<String> names = new ArrayList<String>();
+        for(TableSetting ts:getTableSettings()){
+            if ("source".equals(flag)){
+                names.add(ts.getSourceTable());
+            }else if ("target".equals(flag)){
+                names.add(ts.getTargetTable());
+            }else{
+                throw new IllegalArgumentException("flag is not valid");
+            }
+        } 
+                
+        return names;        
+    }
+    
+    public List<String> getSourceTableNames(){
+        return getTableNamesByFlag("source");
+    }
+    
+    public List<String> getTargetTableNames(){
+        return getTableNamesByFlag("target");
+    }
+    
     /**
      * caculate target  relations by source relations
      * 根据源表的关联关系推导出目标表的关联关系

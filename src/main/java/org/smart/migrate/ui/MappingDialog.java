@@ -9,6 +9,7 @@ package org.smart.migrate.ui;
 import java.awt.event.ItemEvent;
 import java.sql.Connection;
 import java.util.List;
+import java.util.Map;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
@@ -16,14 +17,17 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.smart.migrate.DBType;
 import org.smart.migrate.PKStrategy;
 import org.smart.migrate.dao.MetaDao;
 import org.smart.migrate.dao.MetaDaoFactory;
 import org.smart.migrate.model.Field;
+import org.smart.migrate.model.MigrateOptions;
 import org.smart.migrate.setting.FieldSetting;
 import org.smart.migrate.setting.MigratePlan;
 import org.smart.migrate.setting.TableSetting;
 import org.smart.migrate.util.ConnectionUtils;
+import org.smart.migrate.util.ExcelUtils;
 
 /**
  *
@@ -63,7 +67,7 @@ public class MappingDialog extends javax.swing.JDialog {
         for (PKStrategy strategy : PKStrategy.values()) {
             cbxPKStrategy.addItem(strategy.getDescription());
         }
-        cbxPKStrategy.setSelectedItem(PKStrategy.NEW.getDescription());
+        cbxPKStrategy.setSelectedItem(PKStrategy.COPY.getDescription());
     }
     
     //数据模型转换到视图
@@ -87,13 +91,14 @@ public class MappingDialog extends javax.swing.JDialog {
          for (int i = 0; i < tblFieldMapping.getRowCount(); i++) {
                 String srcField = (String)tblFieldMapping.getValueAt(i, 0);
                 String tgtField = (String)tblFieldMapping.getValueAt(i, 1);
+                String defaultValue = (String)tblFieldMapping.getValueAt(i, 3);
                 
-                if (StringUtils.isNotBlank(tgtField)){
+                if (StringUtils.isNotBlank(srcField)||StringUtils.isNotBlank(defaultValue)){
                       FieldSetting fieldSetting = new FieldSetting();
                       fieldSetting.setSourceField(srcField);
                       fieldSetting.setTargetField(tgtField);
                       fieldSetting.setPrimaryKey((Boolean)tblFieldMapping.getValueAt(i, 2));
-                      fieldSetting.setDefaultValue((String)tblFieldMapping.getValueAt(i, 3));
+                      fieldSetting.setDefaultValue(defaultValue);
                       fieldSetting.setDictText((String)tblFieldMapping.getValueAt(i, 4));
                       tableSetting.getFieldSettings().add(fieldSetting);
                 }
@@ -104,12 +109,12 @@ public class MappingDialog extends javax.swing.JDialog {
     }
     
     private void autoMappingField(){
-        List<Field> tgtFields = targetMetaDao.getFieldsOfTable(targetConnection, cbxTargetTables.getSelectedItem().toString());
+        List<Field> srcFields = sourceMetaDao.getFieldsOfTable(sourceConnection, cbxSourceTables.getSelectedItem().toString());
         for (int i = 0; i < tblFieldMapping.getRowCount(); i++) {
-            String srcField = (String)tblFieldMapping.getValueAt(i, 0);
-            for(Field field:tgtFields){
-                if (field.getName().equalsIgnoreCase(srcField))
-                tblFieldMapping.setValueAt(field.getName(), i, 1);
+            String tgtField = (String)tblFieldMapping.getValueAt(i, 1);
+            for(Field field:srcFields){
+                if (field.getName().equalsIgnoreCase(tgtField))
+                tblFieldMapping.setValueAt(field.getName(), i, 0);
             }
         }
     }
@@ -134,40 +139,55 @@ public class MappingDialog extends javax.swing.JDialog {
         model.setRowCount(0);
         TableColumn srcColumn = tblFieldMapping.getColumnModel().getColumn(0);
         TableColumn tgtColumn = tblFieldMapping.getColumnModel().getColumn(1);
-        JComboBox tgtComboBox = new JComboBox();
+        JComboBox srcComboBox = new JComboBox();
+        srcComboBox.setMaximumRowCount(20);
         
         List<Field> srcFields =  sourceMetaDao.getFieldsOfTable(sourceConnection, cbxSourceTables.getSelectedItem().toString());
         List<Field> tgtFields = targetMetaDao.getFieldsOfTable(targetConnection, cbxTargetTables.getSelectedItem().toString());
         
-        tgtComboBox.addItem("");
-        for(Field field:tgtFields){
-            tgtComboBox.addItem(field.getName());
+        srcComboBox.addItem("");
+        for(Field field:srcFields){
+            srcComboBox.addItem(field.getName());
         }
-        //srcColumn.setHeaderValue("源表["+cbxSourceTables.getSelectedItem()+"]");
-        //tgtColumn.setHeaderValue("目标表["+cbxTargetTables.getSelectedItem()+"]");
         
-        tgtColumn.setCellEditor(new DefaultCellEditor(tgtComboBox));
+        srcColumn.setCellEditor(new DefaultCellEditor(srcComboBox));
         
-        for (Field srcField : srcFields) {
-            model.addRow(new Object[]{srcField.getName(), null, false, null, null});
+        int k = 0;
+        for(Field tgtField:tgtFields){
+            k++;
+            model.addRow(new Object[]{null, tgtField.getName(), false, null, null,k});
         }
+        
+        
         
         if (tableSetting!=null&&!CollectionUtils.isEmpty(tableSetting.getFieldSettings()) 
                 &&tableSetting.getSourceTable().equals(cbxSourceTables.getSelectedItem())
                 &&tableSetting.getTargetTable().equals(cbxTargetTables.getSelectedItem())){
+            
             for (int i = 0; i < tblFieldMapping.getRowCount(); i++) {
-                String srcField = (String)tblFieldMapping.getValueAt(i, 0);
-                FieldSetting fieldSetting = tableSetting.getFieldSettingBySourceField(srcField);
+                String tgtField = (String)tblFieldMapping.getValueAt(i, 1);
+                FieldSetting fieldSetting = tableSetting.getFieldSettingByTargetField(tgtField);
                 if (fieldSetting!=null){
-                    tblFieldMapping.setValueAt(fieldSetting.getTargetField(), i, 1);
+                    tblFieldMapping.setValueAt(fieldSetting.getSourceField(), i, 0);
                     tblFieldMapping.setValueAt(fieldSetting.isPrimaryKey(), i, 2);
                     tblFieldMapping.setValueAt(fieldSetting.getDefaultValue(), i, 3);
                     tblFieldMapping.setValueAt(fieldSetting.getDictText(), i, 4);
-                }
-                      
+                }     
             }
         }
     }
+    /**
+     根据目标字段得到映射表的行号
+     */
+    private int getRowIndexByTargetField(String targetField){
+        for (int i = 0; i < tblFieldMapping.getRowCount(); i++) {
+            if (targetField.equals(tblFieldMapping.getValueAt(i, 1))){
+                return i;
+            } 
+        }
+        return -1;
+    }
+        
     
     private void autoMatchTargetTable(String sourceTable){
         for (int i = 0; i < cbxTargetTables.getItemCount(); i++) {
@@ -202,6 +222,7 @@ public class MappingDialog extends javax.swing.JDialog {
         btnAutoMapping = new javax.swing.JButton();
         cbxPKStrategy = new javax.swing.JComboBox();
         jLabel4 = new javax.swing.JLabel();
+        btnBatchDefaultValues = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -210,6 +231,7 @@ public class MappingDialog extends javax.swing.JDialog {
             }
         });
 
+        cbxTargetTables.setMaximumRowCount(20);
         cbxTargetTables.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cbxTargetTablesItemStateChanged(evt);
@@ -220,9 +242,15 @@ public class MappingDialog extends javax.swing.JDialog {
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/smart/migrate/ui/Bundle"); // NOI18N
         jLabel11.setText(bundle.getString("MappingDialog.jLabel11.text")); // NOI18N
 
+        cbxSourceTables.setMaximumRowCount(20);
         cbxSourceTables.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cbxSourceTablesItemStateChanged(evt);
+            }
+        });
+        cbxSourceTables.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbxSourceTablesActionPerformed(evt);
             }
         });
 
@@ -237,14 +265,14 @@ public class MappingDialog extends javax.swing.JDialog {
 
             },
             new String [] {
-                "源字段", "目标字段", "是否主键", "默认值", "数据字典"
+                "Source Field", "Target Field", "是否主键", "默认值", "数据字典", "Row Num"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.Boolean.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.Boolean.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class
             };
             boolean[] canEdit = new boolean [] {
-                false, true, true, true, true
+                true, false, true, true, true, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -255,6 +283,7 @@ public class MappingDialog extends javax.swing.JDialog {
                 return canEdit [columnIndex];
             }
         });
+        tblFieldMapping.setDropMode(javax.swing.DropMode.ON);
         tblFieldMapping.setGridColor(new java.awt.Color(204, 204, 204));
         tblFieldMapping.setShowGrid(true);
         tblFieldMapping.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -271,6 +300,9 @@ public class MappingDialog extends javax.swing.JDialog {
             tblFieldMapping.getColumnModel().getColumn(2).setHeaderValue(bundle.getString("MappingDialog.tblFieldMapping.columnModel.title2")); // NOI18N
             tblFieldMapping.getColumnModel().getColumn(3).setHeaderValue(bundle.getString("MappingDialog.tblFieldMapping.columnModel.title3")); // NOI18N
             tblFieldMapping.getColumnModel().getColumn(4).setHeaderValue(bundle.getString("MappingDialog.tblFieldMapping.columnModel.title4")); // NOI18N
+            tblFieldMapping.getColumnModel().getColumn(5).setResizable(false);
+            tblFieldMapping.getColumnModel().getColumn(5).setPreferredWidth(30);
+            tblFieldMapping.getColumnModel().getColumn(5).setHeaderValue(bundle.getString("MappingDialog.tblFieldMapping.columnModel.title5")); // NOI18N
         }
 
         btnOK.setText(bundle.getString("MappingDialog.btnOK.text")); // NOI18N
@@ -298,6 +330,13 @@ public class MappingDialog extends javax.swing.JDialog {
 
         jLabel4.setText(bundle.getString("MappingDialog.jLabel4.text")); // NOI18N
 
+        btnBatchDefaultValues.setText(bundle.getString("MappingDialog.btnBatchDefaultValues.text")); // NOI18N
+        btnBatchDefaultValues.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBatchDefaultValuesActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -305,10 +344,22 @@ public class MappingDialog extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(btnAutoMapping)
+                        .addGap(27, 27, 27)
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cbxPKStrategy, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnBatchDefaultValues, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnCancel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnOK))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jScrollPane1)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                            .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jLabel11)
@@ -325,17 +376,7 @@ public class MappingDialog extends javax.swing.JDialog {
                                 .addComponent(jLabel3)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(edtWhere, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(btnAutoMapping)
-                        .addGap(27, 27, 27)
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cbxPKStrategy, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnCancel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnOK))))
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -358,11 +399,14 @@ public class MappingDialog extends javax.swing.JDialog {
                     .addComponent(btnCancel)
                     .addComponent(btnAutoMapping)
                     .addComponent(cbxPKStrategy, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4))
+                    .addComponent(jLabel4)
+                    .addComponent(btnBatchDefaultValues))
                 .addContainerGap())
         );
 
-        pack();
+        cbxTargetTables.getAccessibleContext().setAccessibleName(bundle.getString("MappingDialog.cbxTargetTables.AccessibleContext.accessibleName")); // NOI18N
+
+        setBounds(0, 0, 862, 519);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOKActionPerformed
@@ -400,14 +444,24 @@ public class MappingDialog extends javax.swing.JDialog {
 
     private void cbxSourceTablesItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxSourceTablesItemStateChanged
         if (evt.getStateChange()==ItemEvent.SELECTED){
-            autoMatchTargetTable((String)cbxSourceTables.getSelectedItem());
+            String tableName = (String)cbxSourceTables.getSelectedItem();
+            autoMatchTargetTable(tableName);
+            if (migratePlan.getSourceDB().getdBType()==DBType.Excel){
+                ExcelUtils.addIndendityColumnData(migratePlan.getSourceDB().getDatabase(), tableName);
+            }
             initFieldMappings();
+            cbxSourceTables.setToolTipText(tableName);
         }
     }//GEN-LAST:event_cbxSourceTablesItemStateChanged
 
     private void cbxTargetTablesItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbxTargetTablesItemStateChanged
         if (evt.getStateChange()==ItemEvent.SELECTED){
+            String tableName = (String)cbxTargetTables.getSelectedItem();
+            if (migratePlan.getTargetDB().getdBType()==DBType.Excel){
+                ExcelUtils.addIndendityColumnData(migratePlan.getTargetDB().getDatabase(), tableName);
+            }
             initFieldMappings();
+            cbxTargetTables.setToolTipText(tableName);
         }
     }//GEN-LAST:event_cbxTargetTablesItemStateChanged
 
@@ -427,6 +481,21 @@ public class MappingDialog extends javax.swing.JDialog {
             }
         }
     }//GEN-LAST:event_tblFieldMappingMouseClicked
+
+    private void cbxSourceTablesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxSourceTablesActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbxSourceTablesActionPerformed
+
+    private void btnBatchDefaultValuesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBatchDefaultValuesActionPerformed
+        Map<String,Object> defaultValues = MigrateOptions.getInstance().getDefaultValues();
+        for (int i = 0; i < tblFieldMapping.getRowCount(); i++) {
+            String tgtField = (String)tblFieldMapping.getValueAt(i, 1);
+            Object value = defaultValues.get(tgtField);
+            if (value!=null){
+               tblFieldMapping.setValueAt(value, i, 3);
+            }
+        }
+    }//GEN-LAST:event_btnBatchDefaultValuesActionPerformed
 
     /**
      * @param args the command line arguments
@@ -474,6 +543,7 @@ public class MappingDialog extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAutoMapping;
+    private javax.swing.JButton btnBatchDefaultValues;
     private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnOK;
     private javax.swing.JComboBox cbxPKStrategy;
@@ -517,8 +587,8 @@ public class MappingDialog extends javax.swing.JDialog {
      */
     public void setMigratePlan(MigratePlan migratePlan) {
         this.migratePlan = migratePlan;
-        sourceMetaDao = MetaDaoFactory.createMetaDao(migratePlan.getSourceDB().getdBType());
-        targetMetaDao = MetaDaoFactory.createMetaDao(migratePlan.getTargetDB().getdBType());
+        sourceMetaDao = MetaDaoFactory.createMetaDao(migratePlan.getSourceDB().getdBType(),migratePlan.getSourceDB().getDatabase());
+        targetMetaDao = MetaDaoFactory.createMetaDao(migratePlan.getTargetDB().getdBType(),migratePlan.getTargetDB().getDatabase());
         sourceConnection = ConnectionUtils.connect(migratePlan.getSourceDB());
         targetConnection = ConnectionUtils.connect(migratePlan.getTargetDB());
         initTables(cbxSourceTables,sourceMetaDao,sourceConnection);

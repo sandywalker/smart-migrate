@@ -12,6 +12,7 @@ import org.smart.migrate.dao.impl.MetaOracleDao;
 import org.smart.migrate.dao.impl.MetaDB2Dao;
 import org.smart.migrate.dao.impl.MetaAccessDao;
 import org.smart.migrate.DBType;
+import org.smart.migrate.dao.impl.MetaExcelDao;
 
 /**
  * Factory Class to create MetaDao
@@ -25,7 +26,7 @@ public class MetaDaoFactory {
      * @param dbType
      * @return
      */
-    public static MetaDao createMetaDao(DBType dbType){
+    public static MetaDao createMetaDao(DBType dbType,String dbname){
         MetaDaoTemplate metaDaoTemplate = new MetaDaoTemplate();
         switch (dbType){
             case MySQL:
@@ -38,6 +39,8 @@ public class MetaDaoFactory {
                 return new MetaDB2Dao(metaDaoTemplate);
             case Access:
                 return new MetaAccessDao(metaDaoTemplate);
+            case Excel:
+                return new MetaExcelDao(metaDaoTemplate,dbname);
             default:
                 throw new AssertionError(dbType.name());
             

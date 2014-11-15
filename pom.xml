@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.smart</groupId>
     <artifactId>smart-migrate</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -215,6 +215,23 @@
 		</dependency>
 		<!-- SPRING end -->
                 
+                <dependency>
+                        <groupId>net.sf.jsqlparser</groupId>
+                        <artifactId>jsqlparser</artifactId>
+                        <version>0.8.0</version>
+                </dependency>
+                
+                <dependency>
+                    <groupId>com.google.code.sqlsheet</groupId>
+                    <artifactId>sqlsheet</artifactId>
+                    <version>6.5</version>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>net.sf</groupId>
+                            <artifactId>jsqlparser</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
                 
                 <dependency>
 			<groupId>commons-dbcp</groupId>

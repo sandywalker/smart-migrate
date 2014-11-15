@@ -36,5 +36,7 @@ public interface ImportDao {
     
 
     public void toggleTargetSqlServerIdentity(String table, boolean enabled);
+    
+    public void updateTargetRelatedFK(String foreignTable,String logicFK,String FK,String primaryTable,String logicPK,String PK);
             
 }

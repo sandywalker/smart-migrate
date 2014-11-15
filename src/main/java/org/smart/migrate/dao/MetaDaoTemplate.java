@@ -135,7 +135,7 @@ public class MetaDaoTemplate {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
+        Collections.sort(fields);
         return fields;
     }
     

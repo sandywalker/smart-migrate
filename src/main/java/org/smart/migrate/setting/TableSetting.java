@@ -9,6 +9,7 @@ import com.google.common.base.Objects;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.smart.migrate.PKStrategy;
 
 /**
@@ -69,8 +70,9 @@ public class TableSetting implements Serializable, Comparable<TableSetting> {
      * @return
      */
     public FieldSetting getFieldSettingBySourceField(String sourceField) {
-        for (FieldSetting fieldSetting : fieldSettings) {
-            if (fieldSetting.getSourceField().equals(sourceField)) {
+        
+        for (FieldSetting fieldSetting : fieldSettings) {           
+            if (StringUtils.isNotBlank(fieldSetting.getSourceField()) && fieldSetting.getSourceField().equals(sourceField)) {
                 return fieldSetting;
             }
         }

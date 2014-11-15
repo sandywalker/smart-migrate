@@ -47,7 +47,7 @@ public class RelationDialog extends javax.swing.JDialog {
     //初始化表
     private void initTables(JComboBox comboBox){
         comboBox.removeAllItems();
-        List<String> tables = metaDao.getTables(connection);
+        List<String> tables = migratePlan.getSourceTableNames();
         for(String table:tables){
             comboBox.addItem(table);
         }
@@ -236,7 +236,15 @@ public class RelationDialog extends javax.swing.JDialog {
 
     private void btnOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOKActionPerformed
         // TODO add your handling code here:
-        this.modalResult=0;
+        if (StringUtils.isBlank((String)cbxFKTable.getSelectedItem())
+                ||StringUtils.isBlank((String)cbxPKTable.getSelectedItem())
+                ||StringUtils.isBlank((String)cbxFK.getSelectedItem())
+                ||StringUtils.isBlank((String)cbxPK.getSelectedItem())){
+            this.modalResult = 1;
+        }else{
+            this.modalResult=0;
+        }
+        
         this.dispose();
     }//GEN-LAST:event_btnOKActionPerformed
 
@@ -332,7 +340,7 @@ public class RelationDialog extends javax.swing.JDialog {
      */
     public void setMigratePlan(MigratePlan migratePlan) {
         this.migratePlan = migratePlan;
-        metaDao = MetaDaoFactory.createMetaDao(migratePlan.getSourceDB().getdBType());
+        metaDao = MetaDaoFactory.createMetaDao(migratePlan.getSourceDB().getdBType(),migratePlan.getSourceDB().getDatabase());
         connection = ConnectionUtils.connect(migratePlan.getSourceDB());
         initTables(cbxFKTable);
         initTables(cbxPKTable);

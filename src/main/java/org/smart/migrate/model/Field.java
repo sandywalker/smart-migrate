@@ -11,13 +11,15 @@ package org.smart.migrate.model;
  * 字段信息
  * @author Sandy Duan
  */
-public class Field {
+public class Field implements  Comparable<Field>{
     
     private String name;
     private String type;
     private boolean nullable;
     private String defaultValue;
 
+    
+    
     /**
      * @return the name
      */
@@ -72,6 +74,15 @@ public class Field {
      */
     public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
+    }
+
+
+    @Override
+    public int compareTo(Field o) {
+        if (o==null||o.getName()==null){
+            return 1;
+        }
+        return getName().compareTo(o.getName());
     }
     
     

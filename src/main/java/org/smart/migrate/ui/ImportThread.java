@@ -47,9 +47,6 @@ public class ImportThread  extends Thread implements ImportLogger{
     
     private java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/smart/migrate/ui/Bundle"); // NOI18N;
 
-    
-    
-    
     public ImportThread(ImportManager importManager,UIView uIView, JTextPane logger,JProgressBar progressBar,MigratePlan migratePlan){
         this.importManager = importManager;
         this.logger = logger;
@@ -137,16 +134,16 @@ public class ImportThread  extends Thread implements ImportLogger{
         //disable indentity if needed
         //将自动生成主键策略关闭
         importManager.toggleIdentity(tableSetting.getTargetTable(), false);
-        List<String> allPrimaryKeys = importManager.findAllSourcePrimaryKeys(tableSetting);
+        List<String> allPrimaryKeys = importManager.findAllSourcePrimaryKeys(tableSetting,migratePlan);
         List<List<String>> primaryKeys = importManager.splitKeysByBatchSize(allPrimaryKeys);
         progressBar.setMaximum(primaryKeys.size());
         int index = 0;
-        int importedCount = 0;
+        int importedCount = 0;        
         log( bundle.getString("ImportThread.log.totalPrefix") + allPrimaryKeys.size() + bundle.getString("ImportThread.log.totalSuffix"));
         for (List<String> keyList : primaryKeys) {
             if (running) {
                 log(bundle.getString("ImportThread.log.import.running")+ "(" + (importedCount+1) + "-" + (importedCount+keyList.size()) +") "+bundle.getString("ImportThread.log.import.PK")+"： ["+ StringUtils.join(keyList,",")+"]"); 
-                List<Map<String,Object>> sourceDatalList = importManager.findSourceByPrimaryKeys(tableSetting, keyList);
+                List<Map<String,Object>> sourceDatalList = importManager.findSourceByPrimaryKeys(tableSetting, keyList,migratePlan);
                 importManager.batchImportSourceData(tableSetting,sourceDatalList);
                 importedCount+=keyList.size();
                 index++;

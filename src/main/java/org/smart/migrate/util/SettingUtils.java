@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 import org.smart.migrate.setting.FieldSetting;
 import org.smart.migrate.setting.MigratePlan;
 import org.smart.migrate.setting.TableRelation;
@@ -143,7 +144,17 @@ public class SettingUtils {
     }
     
     
-    
+    public static TableRelation getRelationByPKTableAndFKTable(MigratePlan migratePlan, String pkTable,String fkTable){
+        if (StringUtils.isNotBlank(pkTable)&&StringUtils.isNotBlank(fkTable)){
+            for(TableRelation relation:migratePlan.getSourceRelations()){
+                if (pkTable.equals(relation.getPrimaryTable())&&fkTable.equals(relation.getForeignTable())){
+                    return relation;
+                }
+            }
+        }
+        return null;
+    }
+
 
 }
 
@@ -154,6 +165,7 @@ class TableSettingComparator implements  Comparator<TableSetting>{
         return o1.getReferenceCount()-o2.getReferenceCount();
     }
 
+ 
  
     
 }

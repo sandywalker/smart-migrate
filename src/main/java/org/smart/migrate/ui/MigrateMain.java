@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 import javax.swing.DefaultListModel;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -26,6 +27,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.smart.migrate.DBType;
+import org.smart.migrate.dao.MetaDaoFactory;
 import org.smart.migrate.service.ImportManager;
 import org.smart.migrate.setting.DBSetting;
 import org.smart.migrate.setting.MigratePlan;
@@ -56,6 +58,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
     
     private java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/smart/migrate/ui/Bundle"); // NOI18N;
     
+    
     /**
      * Creates new form MigrateMain
      */
@@ -69,6 +72,14 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
         refreshUI();
     }
     
+    
+    private void loadOptions(){
+         
+    }
+    
+    private void saveOptions(){
+        
+    }
     
     private void initCustomComponents(){
          initDBTypes(cbxSrcDBType);
@@ -89,6 +100,8 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
         buttonNext.setEnabled(!running);
         buttonPrev.setEnabled(!running);
         guideController.setEnabled(!running);
+        
+        btnUpdatePK.setEnabled(!running&&isMigratePlanValid());
     }
     
     
@@ -248,7 +261,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
         jScrollPane3 = new javax.swing.JScrollPane();
         tblTableRelations = new javax.swing.JTable();
         btnEditRelation = new javax.swing.JButton();
-        btnDeleteMapping1 = new javax.swing.JButton();
+        btnDeleteRelation = new javax.swing.JButton();
         btnAddRelation = new javax.swing.JButton();
         panelStep6 = new javax.swing.JPanel();
         jLabel32 = new javax.swing.JLabel();
@@ -264,11 +277,13 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
         edtBatchSize = new javax.swing.JFormattedTextField();
         jLabel39 = new javax.swing.JLabel();
         jLabel37 = new javax.swing.JLabel();
+        btnUpdatePK = new javax.swing.JButton();
         buttonPrev = new javax.swing.JButton();
         buttonNext = new javax.swing.JButton();
         btnSavePlan = new javax.swing.JButton();
         jLabel33 = new javax.swing.JLabel();
         jLabel34 = new javax.swing.JLabel();
+        btnOptions = new javax.swing.JButton();
 
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/smart/migrate/ui/Bundle"); // NOI18N
         popDeletePlan.setText(bundle.getString("MigrateMain.popDeletePlan.text")); // NOI18N
@@ -366,7 +381,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel6)
-                .addContainerGap(9, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         panelGuide3.setBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.background")));
@@ -397,7 +412,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
                 .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel8)
-                .addContainerGap(9, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         panelGuide4.setBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.background")));
@@ -419,7 +434,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
                 .addGroup(panelGuide4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel9)
                     .addComponent(jLabel10))
-                .addContainerGap(85, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panelGuide4Layout.setVerticalGroup(
             panelGuide4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -428,7 +443,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
                 .addComponent(jLabel9)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel10)
-                .addContainerGap(9, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         panelGuide5.setBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.background")));
@@ -490,7 +505,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
                 .addComponent(jLabel30)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel31)
-                .addContainerGap(9, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout panelGuidesLayout = new javax.swing.GroupLayout(panelGuides);
@@ -503,9 +518,9 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
                     .addComponent(panelGuide1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(panelGuide2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(panelGuide3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(panelGuide4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(panelGuide5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(panelGuide6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(panelGuide6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(panelGuide4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         panelGuidesLayout.setVerticalGroup(
@@ -561,7 +576,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
                 .addContainerGap()
                 .addComponent(jLabel15)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(textNewPlan, javax.swing.GroupLayout.DEFAULT_SIZE, 390, Short.MAX_VALUE)
+                .addComponent(textNewPlan, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -571,7 +586,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(textNewPlan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel15))
-                .addContainerGap(208, Short.MAX_VALUE))
+                .addContainerGap(204, Short.MAX_VALUE))
         );
 
         tabPlan.addTab(bundle.getString("MigrateMain.jPanel1.TabConstraints.tabTitle"), jPanel1); // NOI18N
@@ -605,7 +620,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel36)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 551, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1))
                 .addGap(16, 16, 16))
         );
         jPanel2Layout.setVerticalGroup(
@@ -643,7 +658,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
                 .addComponent(jLabel11)
                 .addGap(18, 18, 18)
                 .addComponent(tabPlan, javax.swing.GroupLayout.PREFERRED_SIZE, 365, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(93, Short.MAX_VALUE))
+                .addContainerGap(112, Short.MAX_VALUE))
         );
 
         panelSteps.add(panelStep1, "card1");
@@ -735,7 +750,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
                         .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, 7, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(edtSrcDBPort, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(247, Short.MAX_VALUE))
+                .addContainerGap(201, Short.MAX_VALUE))
         );
         panelStep2Layout.setVerticalGroup(
             panelStep2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -858,7 +873,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
                         .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 7, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(edtTgtDBPort, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(248, Short.MAX_VALUE))
+                .addContainerGap(172, Short.MAX_VALUE))
         );
         panelStep3Layout.setVerticalGroup(
             panelStep3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -969,7 +984,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
                     .addGroup(panelStep4Layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(panelStep4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 623, Short.MAX_VALUE)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 547, Short.MAX_VALUE)
                             .addGroup(panelStep4Layout.createSequentialGroup()
                                 .addComponent(jLabel16)
                                 .addGap(0, 0, Short.MAX_VALUE))))
@@ -1054,7 +1069,12 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
             }
         });
 
-        btnDeleteMapping1.setText(bundle.getString("MigrateMain.btnDeleteMapping1.text")); // NOI18N
+        btnDeleteRelation.setText(bundle.getString("MigrateMain.btnDeleteRelation.text")); // NOI18N
+        btnDeleteRelation.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteRelationActionPerformed(evt);
+            }
+        });
 
         btnAddRelation.setText(bundle.getString("MigrateMain.btnAddRelation.text")); // NOI18N
         btnAddRelation.addActionListener(new java.awt.event.ActionListener() {
@@ -1070,7 +1090,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
             .addGroup(panelStep5Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panelStep5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 623, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 547, Short.MAX_VALUE)
                     .addGroup(panelStep5Layout.createSequentialGroup()
                         .addGroup(panelStep5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(panelStep5Layout.createSequentialGroup()
@@ -1078,7 +1098,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnEditRelation)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnDeleteMapping1))
+                                .addComponent(btnDeleteRelation))
                             .addComponent(jLabel12))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
@@ -1091,7 +1111,7 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelStep5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAddRelation)
-                    .addComponent(btnDeleteMapping1)
+                    .addComponent(btnDeleteRelation)
                     .addComponent(btnEditRelation))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 409, Short.MAX_VALUE)
@@ -1178,6 +1198,13 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
 
         jLabel37.setText(bundle.getString("MigrateMain.jLabel37.text")); // NOI18N
 
+        btnUpdatePK.setText(bundle.getString("MigrateMain.btnUpdatePK.text")); // NOI18N
+        btnUpdatePK.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdatePKActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelStep6Layout = new javax.swing.GroupLayout(panelStep6);
         panelStep6.setLayout(panelStep6Layout);
         panelStep6Layout.setHorizontalGroup(
@@ -1190,7 +1217,9 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
                 .addComponent(btnExportLogs)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnRollBack)
-                .addGap(0, 165, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnUpdatePK)
+                .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(panelStep6Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panelStep6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1218,7 +1247,8 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
                     .addComponent(btnRunImport)
                     .addComponent(btnStop)
                     .addComponent(btnExportLogs)
-                    .addComponent(btnRollBack))
+                    .addComponent(btnRollBack)
+                    .addComponent(btnUpdatePK))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 333, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1256,27 +1286,36 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${migratePlan.name}"), jLabel34, org.jdesktop.beansbinding.BeanProperty.create("text"));
         bindingGroup.addBinding(binding);
 
+        btnOptions.setText(bundle.getString("MigrateMain.btnOptions.text")); // NOI18N
+        btnOptions.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnOptionsActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(21, 21, 21)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(panelGuides, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel33)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel34, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(jLabel34, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnSavePlan))
+                    .addComponent(panelGuides, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnSavePlan)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnOptions)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 311, Short.MAX_VALUE)
                         .addComponent(buttonPrev)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(buttonNext))
-                    .addComponent(panelSteps, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(panelSteps, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addGap(21, 21, 21))
         );
         layout.setVerticalGroup(
@@ -1285,22 +1324,23 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
                 .addGap(25, 25, 25)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(panelGuides, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(panelSteps, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(panelSteps, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(buttonPrev)
                         .addComponent(buttonNext)
-                        .addComponent(btnSavePlan))
+                        .addComponent(btnSavePlan)
+                        .addComponent(btnOptions))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel33)
                         .addComponent(jLabel34, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(10, 10, 10))
+                .addContainerGap())
         );
 
         bindingGroup.bind();
 
-        pack();
+        setBounds(0, 0, 913, 600);
     }// </editor-fold>//GEN-END:initComponents
 
     private void buttonPrevActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPrevActionPerformed
@@ -1686,6 +1726,51 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
              }   
     }//GEN-LAST:event_popImportPlanActionPerformed
 
+    private void btnDeleteRelationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteRelationActionPerformed
+        //
+        if (tblTableRelations.getSelectedRowCount()==0){
+            JOptionPane.showMessageDialog(rootPane, bundle.getString("MigrateMain.alert.deleteRelation"));
+        }else{
+            if (JOptionPane.showConfirmDialog(rootPane, bundle.getString("MigrateMain.alert.confirmDeleteRelation"),
+                        UIManager.getString("OptionPane.titleText"),JOptionPane.OK_CANCEL_OPTION)==JOptionPane.OK_OPTION){
+                
+                String fkTable = (String)tblTableRelations.getValueAt(tblTableRelations.getSelectedRow(),0);
+                String pkTable = (String)tblTableRelations.getValueAt(tblTableRelations.getSelectedRow(),2);
+                
+                TableRelation relation = SettingUtils.getRelationByPKTableAndFKTable(migratePlan, pkTable, fkTable);
+                
+                if (relation!=null){
+                    migratePlan.getSourceRelations().remove(relation);
+                    tblTableRelations.remove(tblTableRelations.getSelectedRow());
+                }
+                
+//                
+//                TableSetting tableSetting = migratePlan.getTableSettingBySourceTable(sourceTable);
+//                if (tableSetting!=null){
+//                    migratePlan.getTableSettings().remove(tableSetting);
+//                    tblTableMapping.remove(tblTableMapping.getSelectedRow());
+//                }
+            }
+            
+        }
+    }//GEN-LAST:event_btnDeleteRelationActionPerformed
+
+    private void btnUpdatePKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdatePKActionPerformed
+        UpdateRelatePKDialog urpkd = new UpdateRelatePKDialog(this, true);
+        urpkd.setMigratePlan(migratePlan);
+        urpkd.setImportManager(importManager);
+        urpkd.initComponentsData();
+        urpkd.setLocationRelativeTo(null);
+        urpkd.setVisible(true);
+    }//GEN-LAST:event_btnUpdatePKActionPerformed
+
+    private void btnOptionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOptionsActionPerformed
+        OptionsDialog od = new OptionsDialog(this, true);
+        
+        od.setLocationRelativeTo(null);
+        od.setVisible(true);
+    }//GEN-LAST:event_btnOptionsActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1730,17 +1815,19 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
     private javax.swing.JButton btnAddMapping;
     private javax.swing.JButton btnAddRelation;
     private javax.swing.JButton btnDeleteMapping;
-    private javax.swing.JButton btnDeleteMapping1;
+    private javax.swing.JButton btnDeleteRelation;
     private javax.swing.JButton btnDeleteTargetData;
     private javax.swing.JButton btnEditMapping;
     private javax.swing.JButton btnEditRelation;
     private javax.swing.JButton btnExportLogs;
+    private javax.swing.JButton btnOptions;
     private javax.swing.JButton btnRollBack;
     private javax.swing.JButton btnRunImport;
     private javax.swing.JButton btnSavePlan;
     private javax.swing.JButton btnStop;
     private javax.swing.JButton btnTestConnectSrc;
     private javax.swing.JButton btnTestConnectTarget;
+    private javax.swing.JButton btnUpdatePK;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton buttonNext;
     private javax.swing.JButton buttonPrev;

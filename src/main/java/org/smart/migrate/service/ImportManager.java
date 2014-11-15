@@ -6,6 +6,7 @@
 
 package org.smart.migrate.service;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,13 +16,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
 import javax.swing.JOptionPane;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.smart.migrate.DBType;
 import org.smart.migrate.PKStrategy;
 import org.smart.migrate.context.ImportContext;
 import org.smart.migrate.dao.ImportDao;
 import org.smart.migrate.dao.impl.DefaultImportDao;
+import org.smart.migrate.dao.impl.ExcelImportDao;
 import org.smart.migrate.log.ImportLogger;
 import org.smart.migrate.log.LogLevel;
 import org.smart.migrate.setting.FieldSetting;
@@ -58,8 +59,14 @@ import org.smart.migrate.util.SettingUtils;
     
     public boolean isConnected(){
         try {
-            return sourceDataSource!=null&&!sourceDataSource.getConnection().isClosed()
+            if (migratePlan.getSourceDB().getdBType()==DBType.Excel){
+                File file = new File(migratePlan.getSourceDB().getDatabase());
+                return file.exists()&&targetDataSource!=null&&!targetDataSource.getConnection().isClosed();
+            }else{
+                return (sourceDataSource!=null)&&!sourceDataSource.getConnection().isClosed()
                     &&targetDataSource!=null&&!targetDataSource.getConnection().isClosed();
+            }
+            
         } catch (SQLException ex) {
             Logger.getLogger(ImportManager.class.getName()).log(Level.SEVERE, null, ex);
             importLogger.log(LogLevel.ERROR, ex.getMessage());
@@ -89,19 +96,25 @@ import org.smart.migrate.util.SettingUtils;
     public boolean connectToDataBase(boolean source,boolean target){
         sourceDataSource = null;
         targetDataSource = null;
-        if (source){
+        boolean isExcelSource =  getMigratePlan().getSourceDB().getdBType() == DBType.Excel;
+        if (source&&!isExcelSource){
             sourceDataSource = ConnectionUtils.createDataSource(getMigratePlan().getSourceDB());
         }
         if (target){
             targetDataSource = ConnectionUtils.createDataSource(getMigratePlan().getTargetDB());
         }
-        importDao = new DefaultImportDao(sourceDataSource, targetDataSource,importLogger);
+        if (isExcelSource){
+            importDao = new ExcelImportDao(migratePlan, targetDataSource, importLogger);
+        }else{
+            importDao = new DefaultImportDao(sourceDataSource, targetDataSource,importLogger);
+        }
         return isConnected();
     }
     
     public boolean connectToDataBase(){
        return connectToDataBase(true, true);
     }
+    
     
     /**
      * Delete target table's data
@@ -122,7 +135,8 @@ import org.smart.migrate.util.SettingUtils;
      * @param tableSetting
      * @return
      */
-    public List<String> findAllSourcePrimaryKeys(TableSetting tableSetting){
+    public List<String> findAllSourcePrimaryKeys(TableSetting tableSetting,MigratePlan migratePlan){
+        
         return importDao.findAllSourcePrimaryKeys(tableSetting);
     }
     
@@ -133,8 +147,13 @@ import org.smart.migrate.util.SettingUtils;
      * @param primaryKeys
      * @return
      */
-    public List<Map<String,Object>> findSourceByPrimaryKeys(TableSetting tableSetting, List<String> primaryKeys){
+    public List<Map<String,Object>> findSourceByPrimaryKeys(TableSetting tableSetting, List<String> primaryKeys,MigratePlan migratePlan){
         return importDao.findSourceByPrimaryKeys(tableSetting, primaryKeys);
+    }
+    
+    
+    public void updateTargetRelatedFK(String foreignTable,String logicFK,String FK,String primaryTable,String logicPK,String PK){
+        importDao.updateTargetRelatedFK(foreignTable, logicFK, FK, primaryTable, logicPK, PK);
     }
     
     /**
@@ -179,7 +198,10 @@ import org.smart.migrate.util.SettingUtils;
             }
             Map<String,Object> targetData = new HashMap<String,Object>();
             for(FieldSetting fieldSetting:tableSetting.getFieldSettings()){
-                Object sourceValue = sourceData.get(fieldSetting.getSourceField());
+                Object sourceValue = null;
+                if (StringUtils.isNotBlank(fieldSetting.getSourceField())){
+                    sourceValue = sourceData.get(fieldSetting.getSourceField());
+                }
                 
                 if (fieldSetting.isPrimaryKey()){
                     //If is PK,add PKMappings to Context
@@ -187,7 +209,7 @@ import org.smart.migrate.util.SettingUtils;
                     importContext.addMappedKey(tableSetting, sourcePrimaryKey, targetPrimaryKey);
                     targetData.put(fieldSetting.getTargetField(), targetPrimaryKey);
                 }else{
-                    TableRelation relation = sourceRelations.get(fieldSetting.getSourceField());
+                    TableRelation relation = StringUtils.isNotBlank(fieldSetting.getSourceField())?sourceRelations.get(fieldSetting.getSourceField()):null;
                     if (relation!=null){
                         //if source has relation ,add relation to Context
                         //如果源有关联，则添加关联关系

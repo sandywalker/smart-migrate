@@ -37,7 +37,7 @@ public class ConnectionUtils {
         DriverManager.setLoginTimeout(10);
         try {
             java.util.Properties prop = new java.util.Properties();
-            prop.put("user", dbs.getUsername());
+            prop.put("user", dbs.getUsername()==null?"":dbs.getUsername());
             prop.put("password", dbs.getPassword()==null?"":dbs.getPassword());
             conn = DriverManager.getConnection(dbs.getConnectUrl(), prop);
         } catch (SQLException e) {

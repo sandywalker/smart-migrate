@@ -6,6 +6,7 @@
 
 package org.smart.migrate.dao.impl;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.smart.migrate.dao.ImportDao;
 import org.smart.migrate.log.ImportLogger;
 import org.smart.migrate.log.LogLevel;
+import org.smart.migrate.setting.MigratePlan;
 import org.smart.migrate.setting.TableRelation;
 import org.smart.migrate.setting.TableSetting;
 import org.smart.migrate.util.SettingUtils;
@@ -28,10 +30,19 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 public class DefaultImportDao implements ImportDao{
 
     
-    private  JdbcTemplate sourceJdbcTemplate;
-    private  JdbcTemplate targetJdbcTemplate;
+    protected JdbcTemplate sourceJdbcTemplate;
+    protected  JdbcTemplate targetJdbcTemplate;
     
     private  ImportLogger importLogger;
+    
+    public DefaultImportDao(MigratePlan migratePlan,DataSource targetDataSource,ImportLogger importLogger){
+        sourceJdbcTemplate = null;
+        targetJdbcTemplate = null;
+        if (targetDataSource!=null){
+            targetJdbcTemplate = new JdbcTemplate(targetDataSource);
+        }
+        this.importLogger = importLogger;
+    }
     
     public DefaultImportDao(DataSource sourceDataSource,DataSource targetDataSource,ImportLogger importLogger){
         sourceJdbcTemplate = null;
@@ -129,6 +140,14 @@ public class DefaultImportDao implements ImportDao{
         targetJdbcTemplate.update(sql, foreignKey,primaryKey);
     }
 
+    @Override
+    public void updateTargetRelatedFK(String foreignTable, String logicFK, String FK, String primaryTable, String logicPK, String PK) {
+        String sql = "UPDATE " + foreignTable + " a SET " + FK + " = ( SELECT " + PK + " FROM " + primaryTable + " b WHERE a." + logicFK +" = b." + logicPK + " ) ";
+        targetJdbcTemplate.update(sql);
+    }
+
+    
+    
    
 
     

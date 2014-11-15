@@ -18,7 +18,8 @@ public enum DBType implements Serializable{
     Oracle("oracle.jdbc.driver.OracleDriver","1521","jdbc:oracle:thin:@$host:$port/$database"),
     SQLServer("net.sourceforge.jtds.jdbc.Driver","1433","jdbc:jtds:sqlserver://$host:$port/$database"),
     DB2("com.ibm.db2.jcc.DB2Driver","50000","jdbc:db2://$host:$port/$database"),
-    Access("sun.jdbc.odbc.JdbcOdbcDriver","","jdbc:odbc:Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=$database");
+    Access("sun.jdbc.odbc.JdbcOdbcDriver","","jdbc:odbc:Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=$database"),
+    Excel("com.googlecode.sqlsheet.Driver","","jdbc:xls:file:$database");
     
     private final String driver;
     private final String defaultPort;
