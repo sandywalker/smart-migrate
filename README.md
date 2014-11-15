@@ -17,6 +17,7 @@ Features
 * Auto field mapping
 * Support data rollback
 * Support auto i18n (now supported:EN,zh-CN)
+* Support Microsoft excel data source
 
 
 How to Use
