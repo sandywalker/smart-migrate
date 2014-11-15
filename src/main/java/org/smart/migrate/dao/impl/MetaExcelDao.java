@@ -6,6 +6,9 @@
 
 package org.smart.migrate.dao.impl;
 
+
+
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -85,6 +88,7 @@ public class MetaExcelDao extends MetaAbstractDao implements MetaDao{
                 for (Cell cell : row) { 
                      Field field = new Field();
                      field.setDefaultValue(null);
+                     
                      field.setName(cell.getStringCellValue());
                      field.setNullable(true);
                      field.setType("varchar");

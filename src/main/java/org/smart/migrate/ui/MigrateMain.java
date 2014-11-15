@@ -1390,15 +1390,23 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
             return;
         }
         DBType dBType = (DBType)cbxSrcDBType.getSelectedItem();
-        DBSetting dbs = new DBSetting(dBType,edtSrcDBHost.getText(),edtSrcDBPort.getText(),
-                        edtSrcDBName.getText(),edtSrcDBUser.getText(),String.valueOf(edtSrcDBPassword.getPassword()));
-        Connection connection = ConnectionUtils.connect(dbs);
-        if (connection!=null){
-            JOptionPane.showMessageDialog(rootPane,bundle.getString("MigrateMain.db.success"));
-            ConnectionUtils.disconnect(connection);
+        boolean connect = false;
+        if (dBType==DBType.Excel){
+            File excel = new File(edtSrcDBName.getText());
+            connect = excel.exists();
         }else{
-            JOptionPane.showMessageDialog(rootPane, bundle.getString("MigrateMain.db.error"));
+           DBSetting dbs = new DBSetting(dBType,edtSrcDBHost.getText(),edtSrcDBPort.getText(),
+                            edtSrcDBName.getText(),edtSrcDBUser.getText(),String.valueOf(edtSrcDBPassword.getPassword()));
+            Connection connection = ConnectionUtils.connect(dbs);
+            if (connection!=null){
+                connect = true;
+                ConnectionUtils.disconnect(connection);
+            }else{
+                JOptionPane.showMessageDialog(rootPane, bundle.getString("MigrateMain.db.error"));
+            }
         }
+        String msg = connect?bundle.getString("MigrateMain.db.success"):bundle.getString("MigrateMain.db.error");
+        JOptionPane.showMessageDialog(rootPane,msg);
         
     }//GEN-LAST:event_btnTestConnectSrcActionPerformed
 
@@ -1409,15 +1417,23 @@ public class MigrateMain extends javax.swing.JFrame implements UIView {
             return;
         }
         DBType dBType = (DBType)cbxTgtDBType.getSelectedItem();
-        DBSetting dbs = new DBSetting(dBType,edtTgtDBHost.getText(),edtTgtDBPort.getText(),
-                        edtTgtDBName.getText(),edtTgtDBUser.getText(),String.valueOf(edtTgtDBPassword.getPassword()));
-        Connection connection = ConnectionUtils.connect(dbs);
-        if (connection!=null){
-            JOptionPane.showMessageDialog(rootPane, bundle.getString("MigrateMain.db.success"));
-            ConnectionUtils.disconnect(connection);
+        boolean connect = false;
+        if (dBType==DBType.Excel){
+            File excel = new File(edtTgtDBName.getText());
+            connect = excel.exists();
         }else{
-            JOptionPane.showMessageDialog(rootPane, bundle.getString("MigrateMain.db.error"));
-        }        // TODO add your handling code here:
+           DBSetting dbs = new DBSetting(dBType,edtTgtDBHost.getText(),edtTgtDBPort.getText(),
+                            edtTgtDBName.getText(),edtTgtDBUser.getText(),String.valueOf(edtTgtDBPassword.getPassword()));
+            Connection connection = ConnectionUtils.connect(dbs);
+            if (connection!=null){
+                connect = true;
+                ConnectionUtils.disconnect(connection);
+            }else{
+                JOptionPane.showMessageDialog(rootPane, bundle.getString("MigrateMain.db.error"));
+            }
+        }
+        String msg = connect?bundle.getString("MigrateMain.db.success"):bundle.getString("MigrateMain.db.error");
+        JOptionPane.showMessageDialog(rootPane,msg);      // TODO add your handling code here:
         
     }//GEN-LAST:event_btnTestConnectTargetActionPerformed
 

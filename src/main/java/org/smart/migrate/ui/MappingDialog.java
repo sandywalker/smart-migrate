@@ -589,7 +589,11 @@ public class MappingDialog extends javax.swing.JDialog {
         this.migratePlan = migratePlan;
         sourceMetaDao = MetaDaoFactory.createMetaDao(migratePlan.getSourceDB().getdBType(),migratePlan.getSourceDB().getDatabase());
         targetMetaDao = MetaDaoFactory.createMetaDao(migratePlan.getTargetDB().getdBType(),migratePlan.getTargetDB().getDatabase());
-        sourceConnection = ConnectionUtils.connect(migratePlan.getSourceDB());
+        if (migratePlan.getSourceDB().getdBType()!=DBType.Excel){
+            sourceConnection = ConnectionUtils.connect(migratePlan.getSourceDB());
+        }else{
+            sourceConnection = null;
+        }
         targetConnection = ConnectionUtils.connect(migratePlan.getTargetDB());
         initTables(cbxSourceTables,sourceMetaDao,sourceConnection);
         initTables(cbxTargetTables,targetMetaDao,targetConnection);

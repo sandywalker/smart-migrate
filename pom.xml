@@ -216,21 +216,14 @@
 		<!-- SPRING end -->
                 
                 <dependency>
-                        <groupId>net.sf.jsqlparser</groupId>
-                        <artifactId>jsqlparser</artifactId>
-                        <version>0.8.0</version>
-                </dependency>
-                
+                        <groupId>org.apache.poi</groupId>
+                        <artifactId>poi</artifactId>
+                        <version>3.9</version>
+                </dependency> 
                 <dependency>
-                    <groupId>com.google.code.sqlsheet</groupId>
-                    <artifactId>sqlsheet</artifactId>
-                    <version>6.5</version>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>net.sf</groupId>
-                            <artifactId>jsqlparser</artifactId>
-                        </exclusion>
-                    </exclusions>
+                    <groupId>org.apache.poi</groupId>
+                    <artifactId>poi-ooxml</artifactId>
+                    <version>3.9</version>
                 </dependency>
                 
                 <dependency>

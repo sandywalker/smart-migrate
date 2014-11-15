@@ -43,4 +43,14 @@
                 <exec.executable>java</exec.executable>
             </properties>
         </action>
+        <action>
+            <actionName>CUSTOM-assembly</actionName>
+            <displayName>assembly</displayName>
+            <goals>
+                <goal>assembly:assembly</goal>
+            </goals>
+            <properties>
+                <skipTests>true</skipTests>
+            </properties>
+        </action>
     </actions>
